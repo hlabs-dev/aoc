@@ -6,7 +6,7 @@ data = aocd.get_data(day=7, year=2023).split('\n')
 def parse(s, part):
     cards = ['23456789TJQKA', 'J23456789TQKA']
     hand, bid = s.split()
-    
+
     bid,cnt = int(bid), Counter(hand)
     
     if part == 2: js, cnt['J'] = cnt['J'], 0
@@ -18,5 +18,6 @@ def parse(s, part):
 
 for part in [1,2]:
     T = sorted(map(lambda l:parse(l,part),data))
-    res = sum( i*h[2] for i,h in enumerate(T[::],start=1) )
+    res = sum( i*bid for i,(_,_,bid) in enumerate(T,start=1) )
+
     print("Part"+str(part)+":",res)
