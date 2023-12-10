@@ -26,7 +26,7 @@ for next_s in neighbours[S]:
                        if {next_s, pos} == {offset(S,di) for di in maps[k]})
         break
 
-part2 = 0
+part2 = s = 0
 for i,j in product(range(m),range(n)):
     if (i,j) in path: s += parity[sparse[(i,j)]]
     else: part2+= int(s)%2
