@@ -12,9 +12,8 @@ visited, new, cache = {S}, {S}, {0:1}
 k, r  = 26501365//n, 26501365%n
 
 for c in range(1,r+2*n+1):
-    new = { np for p in new for di in dirs for np in [tadd(p,di)] 
-           if np not in visited and modp(np) in sparse}
-    visited  = visited.union(new)
+    new, visited = { np for p in new for di in dirs for np in [tadd(p,di)] 
+        if np not in visited and modp(np) in sparse}, new
     cache[c] = len(new) + (cache[c-2] if c>1 else 0)
 
 d2 = cache[r+2*n]+cache[r]-2*cache[r+n]
