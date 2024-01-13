@@ -35,6 +35,21 @@ while len(stack):
 
     for di in [di2 for di2,vis in ndirs if not(vis)]: stack.append((cpos,di))
 
-for i,graph in enumerate(graphs,1):
+for i,graph in enumerate(graphs[:1],1):
     res = max(nx.path_weight(graph, path, "cost") for path in nx.all_simple_paths(graph, S, E))
     print("Part%d: %d" % (i,res))
+
+
+import matplotlib.pyplot as plt
+
+G = nx.convert_node_labels_to_integers(graphs[1], first_label=0, ordering='default', label_attribute=None)
+pos = nx.spring_layout(G, seed=1)  # positions for all nodes - seed for reproducibility
+nx.draw_networkx_nodes(G, pos, node_size=200, node_color = "white", edgecolors= "black")
+nx.draw_networkx_edges(G, pos, width=1)
+nx.draw_networkx_labels(G, pos, font_size=5, font_family="sans-serif", labels={l:("S" if l==0 else "D" if l==35 else str(l)) for l in G.nodes()})
+edge_labels = nx.get_edge_attributes(G, "cost")
+nx.draw_networkx_edge_labels(G, pos, edge_labels, font_size=5)
+
+plt.axis("off")
+plt.tight_layout()
+plt.show()

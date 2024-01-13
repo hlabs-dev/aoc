@@ -3,14 +3,12 @@ from heapq import heappop, heappush
 from itertools import pairwise
 import aocd
 
-data = aocd.get_data(day=25, year=2023)
 M = defaultdict(set)
-for line in data.split("\n"):
+for line in aocd.get_data(day=25, year=2023).split("\n"):
     src,dst = line.split(': ')
     for de in dst.split():
         M[src].add(de)
         M[de].add(src)
-
 
 def bfs(start, exclusions = {}):
     visited = {start:(0,[start])}
@@ -23,7 +21,6 @@ def bfs(start, exclusions = {}):
                 visited[de] = (dist+1, path+[de])
                 heappush(heap,(dist+1,de,path+[de]))
     return (len(visited),visited, node)
-
 def findcut():
     start = next(k for k in M)
     _,visited,stop = bfs(start)
