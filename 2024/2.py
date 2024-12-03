@@ -13,6 +13,6 @@ def ispart(line):
     elif any(isgood(line[:i]+line[i+1:]) for i in range(len(line))): return 2
     return 0
 
-res = Counter(ispart(line) for line in T)
+res = Counter(map(ispart,T))
 
 print('part1:', res[1], 'part2:', res[1]+res[2])
