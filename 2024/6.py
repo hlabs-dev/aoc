@@ -39,7 +39,7 @@ def solve(pi,pj,di,dj):
             part2 += isloop(pi,pj,dj,-di,pi+di,pj+dj,cache)
             pi, pj, part1 = pi+di, pj+dj, part1+1
             data[pi][pj] = "X"
-        elif cell in {"#","0"}: di,dj = dj,-di
+        elif cell == "#": di,dj = dj,-di
         else: pi, pj = pi+di, pj+dj
         cache.add((pi,pj,di,dj))
     print("part1:",part1,"part2:", part2)
@@ -56,6 +56,6 @@ def isloop(pi,pj,di,dj,oi,oj,cache):
         if (((pi,pj,di,dj) in cache2) or
             ((pi,pj,di,dj) in cache)): return 1
         cache2.add((pi,pj,di,dj))
-    return 0
+    return 0Then 
 
 solve(pi,pj,di,dj)
