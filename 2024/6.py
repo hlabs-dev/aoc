@@ -54,8 +54,8 @@ def isloop(pi,pj,di,dj,oi,oj,cache):
         else: pi,pj,di,dj = npi,npj,ndi,ndj
 
         if (((pi,pj,di,dj) in cache2) or
-            ((pi,pj,di,dj) in cache)): return 1
+            ((pi,pj,di,dj) in cache2)): return 1
         cache2.add((pi,pj,di,dj))
-    return 0Then 
+    return 0
 
 solve(pi,pj,di,dj)

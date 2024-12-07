@@ -1,11 +1,11 @@
 import time
 import aocd
-from itertools import combinations
+
 def devnull(*args): return
-iter = 10
+iter = 1000
 START = time.time_ns()
 
-for mday in range(1,8):
+for mday in range(7,9):
     start2 = time.time_ns()
     for _ in range(iter):       
         with open("2024/"+str(mday)+".py") as f:
