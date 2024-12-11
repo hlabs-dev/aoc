@@ -30,7 +30,7 @@ for ants in ants_dict.values():
         while(inrange(*cur)):
             part2.add(cur)
             cur = cur[0]+di, cur[1]+dj
-        cur = a
+        cur = a[0]-di, a[1]-dj
         while(inrange(*cur)):
             part2.add(cur)
             cur = cur[0]-di, cur[1]-dj

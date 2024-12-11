@@ -16,5 +16,5 @@ for page in pages:
     mid = int(sorted_page[len(page)//2])
     if page == sorted_page: part1 += mid
     else: part2 += mid
-                                
+
 print("part1:", part1, "part2:", part2)
