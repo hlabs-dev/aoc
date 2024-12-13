@@ -2,10 +2,10 @@ import time
 import aocd
 
 def devnull(*args): return
-iter = 10
+iter = 100
 START = time.time_ns()
 
-for mday in range(1,13):
+for mday in range(13,14):
     start2 = time.time_ns()
     for _ in range(iter):       
         with open("2024/"+str(mday)+".py") as f:
