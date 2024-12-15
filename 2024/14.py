@@ -33,16 +33,12 @@ def getdim():
 
 def solve_congruences( r1, r2, k1=m, k2=n):
     n = k1 * k2
-    m1 = n // k1
-    m2 = n // k2
-    inv1 = pow(m1, -1, k1)  # m1^-1 mod k1
-    inv2 = pow(m2, -1, k2)  # m2^-1 mod k2
-    t = (r1 * m1 * inv1 + r2 * m2 * inv2) % n
-    return t
+    m1, m2 = n // k1,  n // k2
+    inv1, inv2 = pow(m1, -1, k1) , pow(m2, -1, k2)
+    return (r1 * m1 * inv1 + r2 * m2 * inv2) % n
 
 part2 = solve_congruences(*getdim())
 
 print("part1:",part1(),"part2:",part2)
 
 #prtree(Counter(post(px,py,vx,vy,part2,m,n) for px,py,vx,vy in data))
-
