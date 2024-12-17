@@ -46,4 +46,4 @@ p1x, p1y, p2x, p2y = *getrobot(MP),*getrobot(MP2)
 for d in DL:
     p1x, p1y, p2x, p2y = *move(p1x, p1y, d, MP), *move(p2x, p2y, d, MP2)
 
-print("part1:", getGPS(MP), "part1:", getGPS(MP2))
+print("part1:", getGPS(MP), "part2:", getGPS(MP2))
