@@ -1,57 +1,34 @@
 import re
 import aocd
 
-def combo(v,regc):
-    if v<4: return v
-    if v==7: print("invalid combo")
-    else: return regc[v-4]
+def combo(v,reg): return v if v<4 else reg[v-4]
 
-def step(cur,mem,regs,out):
-    op, ode = mem[cur:cur+2]
-    if op == 0:
-        regs[0] = regs[0]>>combo(ode,regs)
-        cur += 2
-    elif op == 1:
-        regs[1] = regs[1]^ode
-        cur += 2
-    elif op == 2:
-        regs[1] = combo(ode,regs)%8
-        cur += 2
-    elif op == 3:
-        if regs[0]: cur = ode
-        else: cur += 2
-    elif op == 4:
-        regs[1] = regs[1]^regs[2]
-        cur += 2
-    elif op == 5:
-        out.append(combo(ode,regs)%8)
-        cur += 2
-    elif op == 6:
-        regs[1] = regs[0]>>combo(ode,regs)
-        cur += 2
-    elif op == 7:
-        regs[2] = regs[0]>>combo(ode,regs)
-        cur += 2
-    return cur,out
-
-def run(regr,mem):
-    cur = 0
-    out = []
-    while cur<len(mem):
-        cur, out = step(cur,mem,regr,out)
+def run(reg,mem):
+    cur, out = 0, []
+    while cur<len(mem): 
+        op, ode = mem[cur:cur+2]
+        if op in [0,6,7]: reg[[0,6,7].index(op)] = reg[0]>>combo(ode,reg)
+        elif op == 1: reg[1] = reg[1]^ode
+        elif op == 2: reg[1] = combo(ode,reg)%8
+        elif op == 3: cur    = ode - 2 if reg[0] else cur
+        elif op == 4: reg[1] = reg[1]^reg[2]
+        elif op == 5: out.append(combo(ode,reg)%8)
+        cur += 2       
     return out
 
-def find(start,suffix):
-    for i in range(0,64):
-        if mem[len(mem)-suffix:] == run([start+i,0,0],mem):
-            return start+i
+def find_iter(start, suffix, mem):
+    for i in range(start,start+8):
+        if mem[suffix:] == run([i,0,0],mem) : yield i
         
-def part2(mem):
-    ret = 0
-    for i in range(len(mem)):
-        ret = find(ret*8,i+1)
-    return ret
+def revreg(mem, cur, depth):
+    if depth == 0: return cur
+    else:
+        for ncur in find_iter(cur*8, depth-1, mem):
+            ret = revreg(mem, ncur, depth-1)
+            if ret>=0: return ret
+        return -1
 
-reg, mem = [list(map(int,re.findall(r'\d+', part))) for part in aocd.get_data(day=17, year=2024).split("\n\n")]
+reg, mem = [list(map(int,re.findall(r'\d+', part))) 
+            for part in aocd.get_data(day=17, year=2024).split("\n\n")]
 
-print("part1:",run(reg,mem), "part2:", part2(mem))
+print("part1:",run(reg,mem), "part2:", revreg(mem,0,len(mem)))
