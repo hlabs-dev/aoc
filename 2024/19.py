@@ -12,6 +12,7 @@ class TrieNode:
 class Trie:
     def __init__(self, words):
         self.root = TrieNode()
+        self.maxlen = 0
         for word in words:
             self.insert(word)
 
@@ -27,9 +28,8 @@ class Trie:
         node = self.root
         prefixes = []
         prefix = ""
-        for char in target:
-            if char not in node.children:
-                break
+        for i,char in enumerate(target):
+            if char not in node.children: break
             node = node.children[char]
             prefix += char
             if node.is_end_of_word:
@@ -39,15 +39,10 @@ class Trie:
 trie = Trie(patterns.split(", "))
 
 @cache
-def isok(design):
-    if design == "": return True
-    for pa in trie.find_prefixes(design):
-        if isok(design[len(pa):]): return True
-    return False
-
-@cache
 def cnt(design):
     if design == "": return 1
     return sum(cnt(design[len(pa):]) for pa in trie.find_prefixes(design))
 
-print("part1:",sum(isok(de) for de in designs),"part2:",sum(cnt(de) for de in designs))
+cntlist = [cnt(de) for de in designs]
+
+print("part1:",sum(cnt>0 for cnt in cntlist),"part2:",sum(cntlist))
