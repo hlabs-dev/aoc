@@ -1,6 +1,5 @@
-import aocd, heapq
-from collections import Counter, deque
-from functools import cache
+import aocd
+from collections import deque
 
 data = aocd.get_data(day=20, year=2024).splitlines()
 h,w = len(data), len(data[0])
