@@ -2,7 +2,7 @@ import time
 import aocd
 
 def devnull(*args): return
-iter = 1
+iter = 5
 START = time.time_ns()
 res = []
 

@@ -18,7 +18,7 @@ def countsegs(segset):
 
 def dijkstra(data,start,end):
     distances = defaultdict(lambda:(float("inf"), set()))
-    distances[*start,1]=(0,set())
+    distances[start[0],start[1],1]=(0,set())
     queue=[(0,*start,1)]
     
     while queue:

@@ -1,30 +1,23 @@
-from collections import Counter
+import numpy as np
 import aocd
 
-mo = 19**4
-
-def nextsecret(n):
-    n1 = (n^((n<<6)&16777215))
-    n2 = (n1>>5)^n1
-    return ((n2<<11)^n2)&16777215
-
-def combs(n,cbs):
-    visited = set()
-    base = [n%10]
+def day22():
+    data = [int(line) for line in aocd.get_data(day=22, year=2024).splitlines()]
+    npa = np.array(data)
+    base = [npa%10]
+    col = np.zeros(19**4, dtype=np.uint16)
+    mo = 19**4
     for i in range(2000):
-        n = nextsecret(n)
-        base.append(n%10)
-    ret = Counter()
-    diffs = [9+a-b for a,b in zip(base[1:],base)]
-    cur = diffs[0]*(19**2)+diffs[1]*(19)+diffs[2]
-    for i,v in enumerate(diffs[3:]):
-        cur = (cur*19+v)%mo
-        if cur not in visited:
-            cbs[cur] += base[i+4]
-            visited.add(cur)
-    return n
+        npa ^= (npa<<6)&16777215
+        npa ^= npa>>5
+        npa ^= (npa<<11)&16777215
+        base.append(npa%10)
+    base = np.array(base).T
+    diff = base[:,:-1]-base[:,1:]+9
+    for i,row in enumerate(diff):
+        cv = row[:-3]+row[1:-2]*19+row[2:-1]*19**2+row[3:]*19**3
+        unique_values, first_indices = np.unique(cv, return_index=True)
+        np.add.at(col, unique_values, base[i][first_indices+4])
+    print("part1:",sum(npa.astype(np.uint64)),"part2:",max(col))
 
-data = [int(line) for line in aocd.get_data(day=22, year=2024).splitlines()]
-cbs = [0]*(19**4)
-
-print("part1:",sum(combs(n,cbs) for n in data),"part2",max(cbs))
+day22()

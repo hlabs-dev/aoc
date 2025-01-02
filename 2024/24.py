@@ -4,7 +4,7 @@ import aocd
 data = aocd.get_data(day=24, year=2024)
 
 V, R = data.split("\n\n")
-V = { var:(int(val),int(var[1:])) for line in V.splitlines() for var,val in [line.split(": ")] }
+V = { var:int(val) for line in V.splitlines() for var,val in [line.split(": ")] }
 R = {res:(v1,v2,op) for line in R.splitlines() for v1,op,v2,_,res in [line.split(" ")]}
 
 def getRuleIdx(R):
@@ -23,21 +23,11 @@ def solve(V,ridx):
         v1 = solve.popleft()
         for v2,op,res in ridx[v1]:
             if v2 in V and res not in V:
-                val1,l1,val2,l2 = *V[v1],*V[v2]
+                val1,val2 = V[v1],V[v2]
                 nval = (val1 and val2) if op == "AND" else ((val1 or val2) if op == "OR" else (val1 != val2))
-                if l1 == -1 or l2 == -1:
-                    nl = -1
-                elif l1 != l2:
-                    nl = -1
-                    wl.append(res)
-                else: nl = l1 + 1
-                V[res] = (nval,nl)
+                V[res] = nval
                 solve.append(res)
-                if res[0] == "z":
-                    #print(res)
-                    if nl != -1 and int(res[1:])+1 != nl:
-                        wl.append(res)
-                    ret += nval*(2**int(res[1:]))
+                if res[0] == "z":ret += nval*(2**int(res[1:]))
     return ret 
 
 def setvar(V,var,val):
@@ -53,17 +43,17 @@ def su(a,b,ridx):
 
 ridx = getRuleIdx(R)
 
-part1 = solve(V,ridx)
-
+part2 = []
 for i in range(1,45):
     if not(any(l[2] in R[f'z{i:02}'][:2] for l in ridx[f'x{i:02}'] if l[1] == "XOR" and R[f'z{i:02}'][2] =="XOR")):
-        print(i)
-        print(R[f'z{i:02}'])
-        print(ridx[f'x{i:02}'])
+        xor1 = next(v[2] for v in ridx[f'x{i:02}'] if v[1] == "XOR")
+        if R[f'z{i:02}'][2] != "XOR":
+            xor2 = next(v[2] for v in ridx[xor1] if v[1] == "XOR")
+            part2 += [f'z{i:02}', xor2]
+        else:
+            and1 = next(v[2] for v in ridx[f'x{i-1:02}'] if v[1] == "AND")
+            or1 = next(v[2] for v in ridx[and1] if v[1] == "OR")
+            xor2 = next(v[0] for v in ridx[or1] if v[1] == "XOR")
+            part2 += [xor1, xor2]
 
-R['z05'],R['hdt'] = R['hdt'],R['z05']
-R['z09'],R['gbf'] = R['gbf'],R['z09']
-R['mht'],R['jgt'] = R['jgt'],R['mht']
-R['z30'],R['nbf'] = R['nbf'],R['z30']
-
-print("part1:", part1 ,"part2:", ".".join(sorted(['mht','jgt','z09','gbf','z05','hdt','z30','nbf'])))
+print("part1:", solve(V,ridx) ,"part2:", ".".join(sorted(part2)))
