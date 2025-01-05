@@ -8,9 +8,9 @@ def day22():
     col = np.zeros(19**4, dtype=np.uint16)
     mo = 19**4
     for i in range(2000):
-        npa ^= (npa<<6)&16777215
-        npa ^= npa>>5
-        npa ^= (npa<<11)&16777215
+        npa ^= (npa << 6) & 16777215
+        npa ^= npa >> 5
+        npa ^= (npa << 11) & 16777215
         base.append(npa%10)
     base = np.array(base).T
     diff = base[:,:-1]-base[:,1:]+9

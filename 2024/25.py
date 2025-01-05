@@ -6,12 +6,14 @@ data = aocd.get_data(day=25, year=2024).split("\n\n")
 def parse(key):
     lines = key.splitlines()
     iskey = lines[0][0] == "."
-    idx = [bisect_left(lines,1,key=lambda x:x[i]=='.#'[iskey]) for i in range(5)]
-    return (iskey, tuple(6-v if iskey else v-1 for v in idx))
+    keyhash = sum(((1<<bisect_left(lines[1:-1],1,key=lambda x:x[i]==lines[6][0]))-1) << (i*5) for i in range(5))
+    return (iskey, keyhash)
 
-keys, locks = set(), set()
-for key in data:
-    iskey, keyhash = parse(key)
-    (keys if iskey else locks).add(keyhash)
+def solve(data):
+    keys, locks = set(), set()
+    for key in data:
+        iskey, keyhash = parse(key)
+        (keys if iskey else locks).add(keyhash)
+    print("part1:",sum( l & k == l for k in keys for l in locks))
 
-print("part1:",sum( all(ki+li<=5 for ki,li in zip(k,l)) for k in keys for l in locks))
+solve(data)
