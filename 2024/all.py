@@ -6,7 +6,7 @@ iter = 20
 START = time.time_ns()
 res = []
 
-for mday in range(25,26):
+for mday in range(22,23):
     start2 = time.time_ns()
     for _ in range(iter):       
         with open("2024/"+str(mday)+".py") as f:

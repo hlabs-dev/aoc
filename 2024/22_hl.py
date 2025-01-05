@@ -28,3 +28,4 @@ data = [int(line) for line in aocd.get_data(day=22, year=2024).splitlines()]
 cbs = [0]*(19**4)
 
 print("part1:",sum(combs(n,cbs) for n in data),"part2",max(cbs))
+
