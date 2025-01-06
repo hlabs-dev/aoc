@@ -3,31 +3,23 @@ import numpy as np
 
 def day22():
     data = [int(line) for line in aocd.get_data(day=22, year=2024).splitlines()]
-    UNIQUE_SEQUENCES = 19**4
-    npa = np.array(data)
-    prev = npa%10
-    base = [prev]
-    cv = []
-    col = np.zeros(UNIQUE_SEQUENCES, dtype=np.uint16)
+    npa = np.array(data, dtype=np.uint32)
+    base = []
+    col = np.zeros(19**4, dtype=np.uint32)
     
-    for i in range(2000):
-        npa ^= (npa << 6) & 16777215
-        npa ^= npa >> 5
-        npa ^= (npa << 11) & 16777215
-        curr = npa%10
-        delta = curr-prev+9
-        prev = curr
-        if i == 0: roll = delta
-        else: roll = (roll*19 + delta)% UNIQUE_SEQUENCES
-        if i>3:
-            base.append(curr)
-            cv.append(roll)
-        prev = curr
-    base = np.array(base).T
-    cv = np.array(cv).T
-    for a,b in zip(cv,base):
-        unique_values, first_indices = np.unique(a, return_index=True)
-        np.add.at(col, unique_values, b[first_indices+1])
-    print("part1:",sum(npa.astype(np.uint64)),"part2:",max(col))
+    for _ in range(2000):
+        npa ^= (npa<<6)&16777215
+        npa ^= npa>>5
+        npa ^= (npa<<11)&16777215
+        base.append(npa%10)
+
+    base = np.stack(base[::-1], axis=1)
+    prices = base % 10
+    diffs = np.diff(prices, axis=1) + 9
+    cv = sum(diffs[:, i : 2000 + i - 4]*(19**i) for i in range(4))
+
+    for c,b in zip(cv,prices[:, :-4]): col[c] += b
+
+    print ("part1:",sum(npa.astype(np.uint64)),"part2:",max(col))
 
 day22()
