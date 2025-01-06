@@ -4,11 +4,11 @@ import numpy as np
 def day22():
     data = [int(line) for line in aocd.get_data(day=22, year=2024).splitlines()]
     UNIQUE_SEQUENCES = 19**4
-    npa = np.array(data)
+    npa = np.array(data, dtype=np.uint32)
     prev = npa%10
     base = [prev]
     cv = []
-    col = np.zeros(UNIQUE_SEQUENCES, dtype=np.uint16)
+    col = np.zeros(UNIQUE_SEQUENCES, dtype=np.uint32)
     
     for i in range(2000):
         npa ^= (npa << 6) & 16777215
