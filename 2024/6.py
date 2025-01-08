@@ -1,61 +1,71 @@
 import aocd
 
-data = aocd.get_data(day=6, year=2024)
+dirs = [(0,-1),(-1,0),(0,1),(1,0)]
+def tuple2idx(pi,pj,pd,n): return (((pj+1)+(pi+1)*(n+2)) << 2) + pd
 
-data = [[c for j,c in enumerate(line)] for i,line in enumerate(data.splitlines())]
-m, n = len(data), len(data[0])
-
-def inrange(i,j): return 0<=i<m and 0<=j<n
-def pmap(): print("\n".join("".join(c for c in line) for line in data))
-
-di, dj= -1, 0
-pi, pj = next((i,j) for i in range(m) for j in range(n) if data[i][j] == "^")
-data[pi][pj] = "X"
-
-fast = {}
-
-for i in range(m):
-    lObs, lObs2 = -2, 0
-    for j in range(n):
-        if data[i][j] == "#": lObs = j
-        else: fast[(i,j,0,-1)] = (i,lObs+1,-1,0)
-        if data[i][n-j-1] == "#": lObs2 = n-j-1
-        else: fast[(i,n-j-1,0,1)] = (i,lObs2-1,1,0)
-
-for j in range(n):
-    lObs, lObs2 = -2, n+1
+def buildfast(data):
+    m, n = len(data), len(data[0])
+    fast = [0]*4*(m+2)*(n+2)
     for i in range(m):
-        if data[i][j] == "#": lObs = i
-        else: fast[(i,j,-1,0)] = (lObs+1,j,0,1)
-        if data[m-i-1][j] == "#": lObs2 = m-i-1
-        else: fast[(m-i-1,j,1,0)] = (lObs2-1,j,0,-1)
+        lObs, lObs2 = -2, n+1
+        for j in range(n):
+            if data[i][j] == "#": lObs = j
+            else: fast[tuple2idx(i,j,0,n)] = (i,lObs+1,1)
+            if data[i][n-j-1] == "#": lObs2 = n-j-1
+            else: fast[tuple2idx(i,n-j-1,2,n)] = (i,lObs2-1,3)
+    for j in range(n):
+        lObs, lObs2 = -2, m+1
+        for i in range(m):
+            if data[i][j] == "#": lObs = i
+            else: fast[tuple2idx(i,j,1,n)] = (lObs+1,j,2)
+            if data[m-i-1][j] == "#": lObs2 = m-i-1
+            else: fast[tuple2idx(m-i-1,j,3,n)] = (lObs2-1,j,0)
+    return fast
 
-def solve(pi,pj,di,dj):
+
+def solve(input):
+    data = [[c for c in line] for line in input.splitlines()]
+    m, n = len(data), len(data[0])
+    pi, pj = next((i,j) for i in range(m) for j in range(n) if data[i][j] == "^")
+    data[pi][pj] = "X"
+    pd = 1
     part1, part2 = 1, 0
-    cache = {(pi,pj,di,dj)}
-    while(inrange(pi+di,pj+dj)):
-        cell = data[pi+di][pj+dj]
-        if cell == ".":
-            part2 += isloop(pi,pj,dj,-di,pi+di,pj+dj,cache)
-            pi, pj, part1 = pi+di, pj+dj, part1+1
-            data[pi][pj] = "X"
-        elif cell == "#": di,dj = dj,-di
-        else: pi, pj = pi+di, pj+dj
-        cache.add((pi,pj,di,dj))
+    cache = {(pi,pj,pd)}
+
+    fast = buildfast(data)
+
+    def isloop(pi,pj,pd,oi,oj):
+        cache2 = set()
+        while 0<=pi<m and 0<=pj<n:
+            npi,npj,nd = fast[tuple2idx(pi,pj,pd,n)]
+            di,dj = dirs[pd]
+            if ((oi == pi and di == 0 and (npj-oj)*(pj-oj)<=0) or
+                (oj == pj and dj == 0 and (npi-oi)*(pi-oi)<=0)):
+                pi,pj,pd = oi-di, oj-dj, nd
+            else: pi,pj,pd = npi,npj,nd
+
+            if (((pi,pj,pd) in cache) or
+                ((pi,pj,pd) in cache2)):
+                return 1
+            cache2.add(((pi,pj,pd)))
+        return 0
+
+    di,dj = dirs[pd]
+    ni,nj = pi+di,pj+dj
+
+    while 0<=ni<m and 0<=nj<n:
+        #print("pos",pi,pj,di,dj)
+        cell = data[ni][nj]
+        if cell in ".":
+            part2 += isloop(pi,pj,(pd+1)%4,ni,nj)
+            data[ni][nj] = "X"
+            part1 += 1
+            pi,pj = ni, nj
+        elif cell == "#":
+            di,dj,pd = dj,-di,(pd+1)%4
+        else: pi,pj = ni, nj
+        cache.add(((pi,pj,pd)))
+        ni, nj = pi+di,pj+dj
     print("part1:",part1,"part2:", part2)
 
-def isloop(pi,pj,di,dj,oi,oj,cache):
-    cache2 = set()
-    while inrange(pi,pj):
-        npi,npj,ndi,ndj = fast[pi,pj,di,dj]
-        if ((oi == pi and di == 0 and (npj-oj)*(pj-oj)<0) or
-            (oj == pj and dj == 0 and (npi-oi)*(pi-oi)<0)):
-            pi,pj,di,dj = oi-di, oj-dj, ndi,ndj
-        else: pi,pj,di,dj = npi,npj,ndi,ndj
-
-        if (((pi,pj,di,dj) in cache2) or
-            ((pi,pj,di,dj) in cache2)): return 1
-        cache2.add((pi,pj,di,dj))
-    return 0
-
-solve(pi,pj,di,dj)
+solve(aocd.get_data(day=6, year=2024))
