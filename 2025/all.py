@@ -7,7 +7,7 @@ iter = 200
 START = time.time_ns()
 res = []
 
-for mday in range(1,5):
+for mday in range(1,6):
     start2 = time.time_ns()
     for _ in range(iter):       
         with open("2025/"+str(mday)+".py") as f:
