@@ -18,4 +18,5 @@ for a,b in R:
         cur = b+1
         
 part1 = sum(v>=R2[p][0] for v in L for p in [bisect.bisect_left(R2,v,key=lambda x:x[1])] if p<len(R2))
+
 print("Part1:",part1,"Part2:",sum(b-a+1 for a,b in R2))
